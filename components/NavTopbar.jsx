@@ -1,6 +1,7 @@
 import React from "react";
 import Search from "./Search";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { UserButton, SignOutButton } from "@clerk/nextjs";
 
 const NavTopbar = () => {
   return (
@@ -53,10 +54,15 @@ const NavTopbar = () => {
           />
         </svg>
 
-        <Avatar className="w-8 h-8">
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+        {/* User Avatar */}
+        <UserButton afterSignOutUrl="/" />
+
+        {/* Logout Button */}
+        {/* <SignOutButton>
+          <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm">
+            Logout
+          </button>
+        </SignOutButton> */}
       </div>
     </div>
   );

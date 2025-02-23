@@ -1,0 +1,19 @@
+name = "nextjs-chat-app"
+compatibility_date = "2024-02-01"
+
+# Entry point for your Cloudflare Worker
+main = "chat-worker.js"
+
+# Define Durable Objects
+[[durable_objects.bindings]]
+name = "CHAT_ROOM"
+class_name = "ChatRoom"
+
+[[migrations]]
+tag = "v1" # Increment this if you make changes to Durable Objects
+new_classes = ["ChatRoom"]
+
+# KV Namespace
+[[kv_namespaces]]
+binding = "CHAT_HISTORY"
+id = "38c7d33d119e4d2796e3553a7e8b06ee"

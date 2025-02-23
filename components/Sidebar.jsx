@@ -62,13 +62,12 @@ const Sidebar = ({ chats = dummyChats, isCollapsed, onSelectChat }) => {
               </svg>
               New
             </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuContent className="w-40">
+              <DropdownMenuItem>New Chat</DropdownMenuItem>
+              <DropdownMenuItem>Create Group</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Profile</DropdownMenuItem>
-              <DropdownMenuItem>Billing</DropdownMenuItem>
-              <DropdownMenuItem>Team</DropdownMenuItem>
-              <DropdownMenuItem>Subscription</DropdownMenuItem>
+              <DropdownMenuItem>New Update</DropdownMenuItem>
+              <DropdownMenuItem>Add Contact</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

@@ -1,57 +1,71 @@
 import { useEffect, useState } from "react";
+import { useUser, SignIn } from "@clerk/nextjs";
 import Chat from "@/components/ChatBox";
 import NavTopbar from "@/components/NavTopbar";
 import Sidebar from "@/components/Sidebar";
-import SetUsername from "@/components/SetUserName";
-import io from "socket.io-client";
-
-const socket = io({ path: "/api/socketio" });
 
 export default function Home() {
-  const [username, setUsername] = useState("");
-  const [isUsernameSet, setIsUsernameSet] = useState(false);
+  const { isSignedIn, user } = useUser();
   const [activeUsers, setActiveUsers] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    socket.on("activeUsers", (users) => {
-      setActiveUsers(users);
-    });
+    if (!isSignedIn || !user) return;
 
-    return () => socket.off("activeUsers");
-  }, []);
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_CHAT_SERVER);
+    setSocket(ws);
 
-  const handleSetUsername = () => {
-    setIsUsernameSet(true);
-    socket.emit("newUser", username);
-  };
+    ws.onopen = () => {
+      console.log("✅ Connected to WebSocket server");
 
-  console.log("aaaa", activeUsers);
+      // Send user details when connecting
+      ws.send(
+        JSON.stringify({
+          type: "join",
+          username: user.fullName || user.emailAddresses[0].emailAddress, // Use full name or email
+          imageUrl: user.imageUrl, // Send profile image
+        })
+      );
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      console.log("📩 WebSocket Message Received:", data); // ✅ Debug all messages
+
+      if (data.type === "activeUsers") {
+        setActiveUsers(data.users);
+        console.log("👥 Active Users Updated:", data.users);
+      }
+    };
+
+    return () => ws.close();
+  }, [isSignedIn, user]);
+
+  console.log("user", user);
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Top Navigation Bar */}
-      <NavTopbar />
-
-      {/* If username isn't set, show SetUsername screen */}
-      {!isUsernameSet ? (
-        <SetUsername
-          username={username}
-          setUsername={setUsername}
-          setIsUsernameSet={handleSetUsername}
-        />
+      {!isSignedIn ? (
+        <div className="flex items-center justify-center h-full">
+          <SignIn routing="hash" />
+        </div>
       ) : (
-        <div className="flex flex-grow">
-          <div className="hidden md:block md:w-80 lg:w-96">
-            <div className="border border-gray-200 rounded-md m-4 h-[90vh]">
-              <Sidebar activeUsers={activeUsers} />
+        <>
+          <NavTopbar />
+          <div className="flex flex-grow">
+            <div className="hidden md:block md:w-80 lg:w-96">
+              <div className="border border-gray-200 rounded-md m-4 h-[90vh]">
+                <Sidebar activeUsers={activeUsers} /> {/* Pass active users */}
+              </div>
+            </div>
+            <div className="flex-grow w-full md:w-auto">
+              <Chat
+                username={user?.username || user?.firstName || "Guest"}
+                socket={socket}
+              />
             </div>
           </div>
-
-          {/* Chat Box (Full width on small screens, with sidebar space on larger screens) */}
-          <div className="flex-grow w-full md:w-auto">
-            <Chat username={username} />
-          </div>
-        </div>
+        </>
       )}
     </div>
   );

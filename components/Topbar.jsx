@@ -1,7 +1,7 @@
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
-const Topbar = ({ username }) => {
+const Topbar = ({ username, userImage }) => {
   function toPascalCase(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   }
@@ -10,9 +10,9 @@ const Topbar = ({ username }) => {
     <div>
       <div className="flex justify-between items-center p-3 rounded-t-md mb-2">
         <div className="flex items-center gap-2">
-          <Avatar className="w-10 h-10">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback>CN</AvatarFallback>
+          <Avatar className="w-8 h-8">
+            <AvatarImage src={userImage} alt={username} />
+            <AvatarFallback>{username?.charAt(0) || "U"}</AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-base font-semibold">
