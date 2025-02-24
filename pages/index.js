@@ -12,7 +12,7 @@ export default function Home() {
   useEffect(() => {
     if (!isSignedIn || !user) return;
 
-    const ws = new WebSocket(process.env.NEXT_PUBLIC_CHAT_SERVER);
+    const ws = new WebSocket("wss://nextjs-chat-app.bornspy.workers.dev/ws");
     setSocket(ws);
 
     ws.onopen = () => {
