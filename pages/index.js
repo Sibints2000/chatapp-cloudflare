@@ -12,25 +12,24 @@ export default function Home() {
   useEffect(() => {
     if (!isSignedIn || !user) return;
 
-    const ws = new WebSocket("wss://nextjs-chat-app.bornspy.workers.dev/ws");
+    const ws = new WebSocket(process.env.NEXT_PUBLIC_CHAT_SERVER);
     setSocket(ws);
 
     ws.onopen = () => {
       console.log("✅ Connected to WebSocket server");
 
-      // Send user details when connecting
       ws.send(
         JSON.stringify({
           type: "join",
-          username: user.fullName || user.emailAddresses[0].emailAddress, // Use full name or email
-          imageUrl: user.imageUrl, // Send profile image
+          username: user.fullName || user.emailAddresses[0].emailAddress,
+          imageUrl: user.imageUrl,
         })
       );
     };
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("📩 WebSocket Message Received:", data); // ✅ Debug all messages
+      console.log("📩 WebSocket Message Received:", data);
 
       if (data.type === "activeUsers") {
         setActiveUsers(data.users);
